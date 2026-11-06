@@ -1,0 +1,194 @@
+/* ==========================================================================
+   UNIFIED ENGINEERING WORKBENCH - REFINED DESIGN SYSTEM TOKENS (STAGE 9.2)
+   Strict, minimal, professional engineering workstation styling.
+   Zero neon, zero gradients, zero AI dashboard aesthetics.
+   ========================================================================== */
+
+:root {
+    /* ------------------------------------------------------------------------
+       1. Light Theme Colors (Default)
+       ------------------------------------------------------------------------ */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F1F1F1;
+    --text-primary: #171717;
+    --text-secondary: #737373;
+    --text-muted: #8C8C8C;
+    --border-color: #E5E5E5;
+    --border-color-subtle: #EEEEEE;
+    --border-color-strong: #D4D4D4;
+
+    --surface-card: #FFFFFF;
+    --surface-card-subtle: #F8F8F8;
+    --surface-hover: #EAEAEA;
+    --surface-active: #E0E0E0;
+
+    --btn-primary-bg: #171717;
+    --btn-primary-text: #FFFFFF;
+    --btn-primary-hover: #333333;
+
+    --input-bg: #FFFFFF;
+    --input-border: #D4D4D4;
+    --input-focus-border: #171717;
+
+    --status-ready-bg: #F1F1F1;
+    --status-ready-text: #171717;
+    --status-ready-border: #D4D4D4;
+
+    --status-running-bg: #F5F5F5;
+    --status-running-text: #171717;
+    --status-running-border: #A3A3A3;
+
+    --status-completed-bg: #F1F1F1;
+    --status-completed-text: #171717;
+    --status-completed-border: #525252;
+
+    --status-warning-bg: #FAF6F0;
+    --status-warning-text: #78350F;
+    --status-warning-border: #D4A373;
+
+    --status-error-bg: #FEF2F2;
+    --status-error-text: #991B1B;
+    --status-error-border: #F87171;
+
+    --status-sim-bg: #F5F5F5;
+    --status-sim-text: #525252;
+    --status-sim-border: #E5E5E5;
+
+    --checkbox-size: 16px;
+    --spinner-size: 16px;
+
+    /* ------------------------------------------------------------------------
+       2. Typography Foundations (Standard Windows System Stack)
+       ------------------------------------------------------------------------ */
+    --font-sans: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "Cascadia Code", "Consolas", "Courier New", monospace;
+
+    /* Type Scale */
+    --text-xs: 11px;
+    --text-sm: 12px;
+    --text-base: 13px;
+    --text-md: 14px;
+    --text-lg: 16px;
+    --text-xl: 18px;
+    --text-2xl: 22px;
+    --text-3xl: 26px;
+
+    /* Weights */
+    --font-regular: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+
+    /* Line Heights */
+    --leading-none: 1.0;
+    --leading-tight: 1.25;
+    --leading-snug: 1.35;
+    --leading-normal: 1.5;
+
+    /* Letter Spacing */
+    --tracking-tight: -0.015em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.035em;
+    --tracking-wider: 0.05em;
+
+    /* ------------------------------------------------------------------------
+       3. Spacing Scale (Standard 4px Increment Grid)
+       ------------------------------------------------------------------------ */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-12: 48px;
+
+    /* ------------------------------------------------------------------------
+       4. Geometry & Border Radii
+       ------------------------------------------------------------------------ */
+    --radius-none: 0;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-full: 9999px;
+    --border-width: 1px;
+
+    /* ------------------------------------------------------------------------
+       5. Restrained Engineering Shadows
+       ------------------------------------------------------------------------ */
+    --shadow-none: none;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-dialog: 0 10px 25px rgba(0, 0, 0, 0.12);
+
+    /* ------------------------------------------------------------------------
+       6. Component Sizing Tokens
+       ------------------------------------------------------------------------ */
+    --header-height: 52px;
+    --sidebar-width: 240px;
+    --nav-item-height: 36px;
+    --btn-height-sm: 28px;
+    --btn-height-md: 34px;
+    --btn-height-lg: 40px;
+    --input-height: 34px;
+    --table-row-height: 36px;
+
+    /* ------------------------------------------------------------------------
+       7. Transitions (Functional Only)
+       ------------------------------------------------------------------------ */
+    --transition-fast: 150ms ease;
+}
+
+/* ----------------------------------------------------------------------------
+   Dark Theme Overrides
+   ---------------------------------------------------------------------------- */
+[data-theme="dark"] {
+    --bg-primary: #171717;
+    --bg-secondary: #292929;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A3A3A3;
+    --text-muted: #737373;
+    --border-color: #383838;
+    --border-color-subtle: #2E2E2E;
+    --border-color-strong: #484848;
+
+    --surface-card: #202020;
+    --surface-card-subtle: #262626;
+    --surface-hover: #333333;
+    --surface-active: #3D3D3D;
+
+    --btn-primary-bg: #FFFFFF;
+    --btn-primary-text: #171717;
+    --btn-primary-hover: #E5E5E5;
+
+    --input-bg: #202020;
+    --input-border: #484848;
+    --input-focus-border: #FFFFFF;
+
+    --status-ready-bg: #292929;
+    --status-ready-text: #FFFFFF;
+    --status-ready-border: #484848;
+
+    --status-running-bg: #262626;
+    --status-running-text: #FFFFFF;
+    --status-running-border: #737373;
+
+    --status-completed-bg: #292929;
+    --status-completed-text: #FFFFFF;
+    --status-completed-border: #A3A3A3;
+
+    --status-warning-bg: #2E2519;
+    --status-warning-text: #FDE68A;
+    --status-warning-border: #92400E;
+
+    --status-error-bg: #301818;
+    --status-error-text: #FECACA;
+    --status-error-border: #991B1B;
+
+    --status-sim-bg: #262626;
+    --status-sim-text: #A3A3A3;
+    --status-sim-border: #383838;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.45);
+    --shadow-dialog: 0 12px 30px rgba(0, 0, 0, 0.6);
+}

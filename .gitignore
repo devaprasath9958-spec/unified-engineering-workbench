@@ -1,0 +1,54 @@
+# =============================================================================
+# Unified Engineering Workbench - .gitignore
+# =============================================================================
+
+# Build directories
+build/
+bin/
+out/
+build-*/
+
+# CMake generated files and artifacts
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CMakeUserPresets.json
+compile_commands.json
+CTestTestfile.cmake
+Makefile
+
+# Visual Studio temporary files, caches, and user settings
+.vs/
+*.sln.docstates
+*.suo
+*.user
+*.userosscache
+*.sln.ide
+Debug/
+Release/
+x64/
+x86/
+ARM/
+ARM64/
+
+# Executables, shared libraries, and static libraries
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.pyd
+
+# Object files and compilation intermediates
+*.obj
+*.o
+*.ilk
+*.pdb
+*.exp
+*.idb
+*.tlog
+*.log
+*.manifest
+*.res
+*.pch

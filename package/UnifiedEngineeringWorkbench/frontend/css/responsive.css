@@ -1,0 +1,349 @@
+/* ==========================================================================
+   RESPONSIVE DESIGN SYSTEM (STAGE 9.4)
+   Precision adaptations across all 6 required viewport tiers:
+   1. Small Mobile:     375px x 667px  (Small handhelds)
+   2. Large Mobile:     430px x 932px  (Modern flagships)
+   3. Tablet:           768px x 1024px (Tablets)
+   4. Small Desktop:    1024px x 768px (Small laptops & 4:3 displays)
+   5. Standard Desktop: 1366px x 768px (Standard widescreen laptops)
+   6. Large Desktop:    1920px x 1080px (FHD / QHD engineering workstations)
+   ========================================================================== */
+
+/* ----------------------------------------------------------------------------
+   Global Fluidity & Overflow Prevention
+   ---------------------------------------------------------------------------- */
+.main-wrapper {
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.content-viewport {
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+.table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+img, svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ----------------------------------------------------------------------------
+   Tier 6: Large Desktop (>= 1600px, tested at 1920px x 1080px)
+   ---------------------------------------------------------------------------- */
+@media (min-width: 1600px) {
+    .view-panel {
+        max-width: 1560px;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    }
+
+    .stat-grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ----------------------------------------------------------------------------
+   Tier 5: Standard Desktop (1200px - 1599px, tested at 1366px x 768px)
+   ---------------------------------------------------------------------------- */
+@media (min-width: 1200px) and (max-width: 1599px) {
+    .view-panel {
+        max-width: 1280px;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+
+    .stat-grid-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ----------------------------------------------------------------------------
+   Tier 4: Small Desktop (1024px - 1199px, tested at 1024px x 768px)
+   ---------------------------------------------------------------------------- */
+@media (min-width: 1024px) and (max-width: 1199px) {
+    .sidebar {
+        width: var(--sidebar-width);
+        position: relative;
+        transform: none !important;
+    }
+
+    .menu-toggle {
+        display: none !important;
+    }
+
+    .content-viewport {
+        padding: var(--space-5);
+    }
+
+    .view-panel {
+        max-width: 980px;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .stat-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ----------------------------------------------------------------------------
+   Tier 3: Tablet Layout (640px - 1023px, tested at 768px x 1024px)
+   ---------------------------------------------------------------------------- */
+@media (min-width: 640px) and (max-width: 1023px) {
+    .sidebar {
+        width: 200px;
+        flex-shrink: 0;
+    }
+
+    .brand-title {
+        font-size: var(--text-sm);
+    }
+
+    .sidebar-header {
+        padding: 0 var(--space-3);
+    }
+
+    .nav-item {
+        padding: 0 var(--space-2);
+        gap: var(--space-2);
+        font-size: var(--text-sm);
+    }
+
+    .menu-toggle {
+        display: none !important;
+    }
+
+    .top-header {
+        padding: 0 var(--space-4);
+    }
+
+    .view-breadcrumb {
+        font-size: var(--text-sm);
+    }
+
+    .content-viewport {
+        padding: var(--space-4);
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: var(--space-3);
+    }
+
+    .stat-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-row {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+}
+
+/* ----------------------------------------------------------------------------
+   Tier 2 & 1: Mobile Layout (< 640px, tested at 430px & 375px)
+   ---------------------------------------------------------------------------- */
+@media (max-width: 639px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 260px;
+        max-width: 80vw;
+        height: 100%;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+        z-index: 150;
+        transition: transform var(--transition-fast);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 140;
+    }
+
+    .backdrop.active {
+        display: block;
+    }
+
+    .menu-toggle {
+        display: flex;
+        min-height: 34px;
+        min-width: 34px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .top-header {
+        padding: 0 var(--space-3);
+        height: 48px;
+    }
+
+    .header-left {
+        gap: var(--space-2);
+        min-width: 0;
+    }
+
+    .view-breadcrumb {
+        font-size: var(--text-sm);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 170px;
+    }
+
+    .theme-toggle-btn {
+        padding: 0 var(--space-2);
+        height: 30px;
+    }
+
+    .theme-toggle-label {
+        display: none;
+    }
+
+    .content-viewport {
+        padding: var(--space-3);
+        overflow-x: hidden;
+    }
+
+    .view-panel {
+        gap: var(--space-3);
+    }
+
+    .view-header h1 {
+        font-size: var(--text-lg);
+        line-height: var(--leading-snug);
+    }
+
+    .view-header p {
+        font-size: var(--text-xs);
+    }
+
+    .cards-grid, .stat-grid-4 {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+
+    .card {
+        padding: var(--space-3);
+    }
+
+    .card-title {
+        font-size: var(--text-sm);
+    }
+
+    .nav-item {
+        min-height: 44px; /* Accessible minimum touch target */
+        font-size: var(--text-base);
+    }
+
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        padding: var(--space-2) 0;
+    }
+
+    .detail-value {
+        word-break: break-word;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+    }
+
+    .action-btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: var(--space-2);
+    }
+
+    .action-btn-group .btn {
+        width: 100%;
+    }
+
+    .dialog {
+        margin: var(--space-3);
+        max-width: calc(100vw - 24px);
+    }
+
+    .dialog-header {
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .dialog-body {
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .dialog-footer {
+        padding: var(--space-2) var(--space-4);
+        flex-wrap: wrap;
+    }
+
+    .toast-container {
+        left: var(--space-3);
+        right: var(--space-3);
+        bottom: var(--space-3);
+        width: auto;
+        max-width: none;
+    }
+
+    .alert {
+        padding: var(--space-2) var(--space-3);
+        font-size: var(--text-xs);
+    }
+}
+
+/* ----------------------------------------------------------------------------
+   Tier 1: Small Mobile Specific (< 380px, tested at 375px x 667px)
+   ---------------------------------------------------------------------------- */
+@media (max-width: 380px) {
+    .view-breadcrumb {
+        max-width: 120px;
+        font-size: var(--text-xs);
+    }
+
+    .stat-value {
+        font-size: var(--text-xl);
+    }
+
+    .brand-title {
+        font-size: var(--text-sm);
+    }
+
+    .checkbox-container {
+        font-size: var(--text-xs);
+    }
+
+    .toast {
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .table th, .table td {
+        padding: var(--space-1) var(--space-2);
+        font-size: var(--text-xs);
+    }
+}

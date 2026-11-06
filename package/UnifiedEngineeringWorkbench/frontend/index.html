@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Unified Engineering Workbench</title>
+    <!-- Core Design Tokens, Base Styles, Components, and Responsive Layout -->
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <style>
+        body {
+            opacity: 0;
+            transition: opacity 0.15s ease-in;
+        }
+        body.ready {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Drawer Backdrop Overlay -->
+    <div id="drawer-backdrop" class="backdrop" aria-hidden="true"></div>
+
+    <!-- Diagnostic Modal Dialog -->
+    <div id="device-dialog" class="dialog-backdrop" role="dialog" aria-modal="true" aria-labelledby="dialog-title" hidden>
+        <div class="dialog">
+            <div class="dialog-header">
+                <span id="dialog-title" class="dialog-title">Hardware Adapter Diagnostics</span>
+                <button type="button" class="dialog-close" data-close-dialog aria-label="Close dialog">
+                    <span data-icon="close"></span>
+                </button>
+            </div>
+            <div class="dialog-body">
+                <p class="text-small" style="color: var(--text-secondary); margin-bottom: var(--space-3);">
+                    Physical hardware communications status and loopback diagnostics across all registered adapter drivers (SIMULATED).
+                </p>
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Adapter</th>
+                                <th>Channel</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>STM32F407G</td>
+                                <td class="cell-numeric">SWD / USB</td>
+                                <td><span class="badge badge-ready">READY (SIMULATED)</span></td>
+                            </tr>
+                            <tr>
+                                <td>Basys 3</td>
+                                <td class="cell-numeric">FT2232HQ</td>
+                                <td><span class="badge badge-ready">READY (SIMULATED)</span></td>
+                            </tr>
+                            <tr>
+                                <td>JTAG-HS2</td>
+                                <td class="cell-numeric">2x7 Ribbon</td>
+                                <td><span class="badge badge-simulated">SIMULATED</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-close-dialog>Close</button>
+                <button type="button" class="btn btn-primary btn-sm" data-close-dialog>Acknowledge</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-shell">
+        <!-- Sidebar Navigation -->
+        <aside id="app-sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-title">Engineering Workbench</div>
+            </div>
+
+            <nav class="sidebar-nav" role="tablist" aria-label="Workbench Sections">
+                <button type="button" class="nav-item active" role="tab" id="tab-overview" data-view="overview" aria-controls="view-overview" aria-selected="true" tabindex="0">
+                    <span class="nav-icon" data-icon="overview"></span>
+                    <span>Overview</span>
+                </button>
+                <button type="button" class="nav-item" role="tab" id="tab-geometry" data-view="geometry" aria-controls="view-geometry" aria-selected="false" tabindex="-1">
+                    <span class="nav-icon" data-icon="geometry"></span>
+                    <span>Geometry</span>
+                </button>
+                <button type="button" class="nav-item" role="tab" id="tab-thermal" data-view="thermal" aria-controls="view-thermal" aria-selected="false" tabindex="-1">
+                    <span class="nav-icon" data-icon="thermal"></span>
+                    <span>Thermal Analysis</span>
+                </button>
+                <button type="button" class="nav-item" role="tab" id="tab-performance" data-view="performance" aria-controls="view-performance" aria-selected="false" tabindex="-1">
+                    <span class="nav-icon" data-icon="performance"></span>
+                    <span>Performance</span>
+                </button>
+                <button type="button" class="nav-item" role="tab" id="tab-hardware" data-view="hardware" aria-controls="view-hardware" aria-selected="false" tabindex="-1">
+                    <span class="nav-icon" data-icon="hardware"></span>
+                    <span>Hardware</span>
+                </button>
+                <button type="button" class="nav-item" role="tab" id="tab-backprop" data-view="backprop" aria-controls="view-backprop" aria-selected="false" tabindex="-1">
+                    <span class="nav-icon" data-icon="backprop"></span>
+                    <span>Backpropagation</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="host-status">
+                    <div id="host-status-dot" class="status-dot"></div>
+                    <span id="host-status-text">Connecting to Host...</span>
+                </div>
+                <div class="text-small text-mono" id="stat-platform">Windows 11 x64</div>
+            </div>
+        </aside>
+
+        <!-- Mobile Drawer Backdrop -->
+        <div id="mobile-backdrop" class="backdrop" tabindex="-1" aria-hidden="true"></div>
+
+        <!-- Main Content Viewport -->
+        <div class="main-wrapper">
+            <header class="top-header">
+                <div class="header-left">
+                    <button type="button" id="menu-toggle-btn" class="menu-toggle" aria-label="Toggle Navigation">
+                        <span data-icon="menu"></span>
+                    </button>
+                    <span id="view-breadcrumb" class="view-breadcrumb">System Overview</span>
+                </div>
+
+                <div class="header-right">
+                    <button type="button" id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle theme">
+                        <span id="theme-icon"></span>
+                        <span id="theme-label" class="theme-toggle-label">Dark Mode</span>
+                    </button>
+                </div>
+            </header>
+
+            <main class="content-viewport">
+                <!-- VIEW 1: Overview -->
+                <section id="view-overview" class="view-panel active" role="tabpanel" aria-labelledby="tab-overview" aria-hidden="false">
+                    <div class="view-header">
+                        <h1>Unified Engineering Workbench</h1>
+                        <p>Analyze geometry, solve thermal FEM problems, benchmark parallel workloads, simulate hardware interfaces, and verify numerical backpropagation.</p>
+                    </div>
+
+                    <!-- Workflow Guidance Banner -->
+                    <div class="card card-info" style="margin-bottom: var(--space-3); border-left: 3px solid var(--accent-primary, #2563eb);">
+                        <div class="card-body" style="padding: var(--space-2) var(--space-3); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2);">
+                            <div>
+                                <span class="text-strong" style="font-size: var(--text-sm);">Standard Engineering Workflow:</span>
+                                <span class="text-secondary" style="font-size: var(--text-sm); margin-left: var(--space-2);">Load / Configure &rarr; Run &rarr; Verify &rarr; Export</span>
+                            </div>
+                            <span class="badge badge-ready">Air-Gapped &bull; Fully Local</span>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Widgets Grid -->
+                    <div class="cards-grid stat-grid-4">
+                        <div class="stat-widget">
+                            <span class="stat-label">Active Unit Tests</span>
+                            <span class="stat-value">638 Passing</span>
+                            <span class="stat-subtext">Across 7 test suites (0 failed)</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Parallel Speedup</span>
+                            <span class="stat-value">3.46x</span>
+                            <span class="stat-subtext">4-worker multicore efficiency (86.5%)</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Host Toolchain</span>
+                            <span class="stat-value">MSVC x64</span>
+                            <span class="stat-subtext">Standard C++17 compilation</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">WebView2 Runtime</span>
+                            <span class="stat-value text-mono" id="stat-webview">Checking...</span>
+                            <span class="stat-subtext">Local Evergreen installation</span>
+                        </div>
+                    </div>
+
+                    <div class="cards-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Live Host Architecture</span>
+                                <span class="badge badge-ready" id="stat-backend-ready">Checking...</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Host Platform:</span>
+                                    <span class="detail-value text-mono" id="stat-platform-val">Windows 11 x64</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Language Standard:</span>
+                                    <span class="detail-value text-mono" id="stat-cpp">C++17</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Native Toolchain:</span>
+                                    <span class="detail-value text-mono" id="stat-compiler">MSVC x64</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Active Subsystems:</span>
+                                    <span class="detail-value text-mono" id="stat-modules-count">6 Modules</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Refined Design System</span>
+                                <span class="badge">Stage 9.5</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Visual Direction:</span>
+                                    <span class="detail-value">Clean Engineering Workstation</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Typography Stack:</span>
+                                    <span class="detail-value text-mono">Segoe UI, Cascadia Code</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Light Palette:</span>
+                                    <span class="detail-value text-mono">#FFFFFF / #F1F1F1 / #171717</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Dark Palette:</span>
+                                    <span class="detail-value text-mono">#171717 / #292929 / #FFFFFF</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subsystems Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Registered Engineering Subsystems</span>
+                            <span class="badge">Architecture</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Subsystem</th>
+                                        <th>Stage</th>
+                                        <th>Mathematical / Engineering Method</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-strong">Engineering Core</td>
+                                        <td>Stage 3</td>
+                                        <td>3D Vectors, Bounding Boxes, Cancellation Tokens</td>
+                                        <td><span class="badge badge-ready">VERIFIED (55 Tests)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-strong">Geometry & CSV</td>
+                                        <td>Stage 4</td>
+                                        <td>ASCII STL Facet Reader & Temperature CSV Parser</td>
+                                        <td><span class="badge badge-ready">VERIFIED (72 Tests)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-strong">Thermal FEM</td>
+                                        <td>Stage 5</td>
+                                        <td>1D Steady-State Heat Conduction with Heat Generation</td>
+                                        <td><span class="badge badge-ready">VERIFIED (37 Tests)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-strong">Multicore Benchmarking</td>
+                                        <td>Stage 6</td>
+                                        <td>Bounded std::thread Parallel Batch Worker Pool</td>
+                                        <td><span class="badge badge-ready">VERIFIED (80 Tests)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-strong">Hardware Protocols</td>
+                                        <td>Stage 7</td>
+                                        <td>STM32, Basys 3, JTAG-HS2 Protocol Adapters</td>
+                                        <td><span class="badge badge-simulated">SIMULATED (91 Tests)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-strong">Backpropagation</td>
+                                        <td>Stage 8</td>
+                                        <td>Manual Chain Rule & Central Finite Differences</td>
+                                        <td><span class="badge badge-ready">VERIFIED (39 Tests)</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 2: Geometry -->
+                <section id="view-geometry" class="view-panel" role="tabpanel" aria-labelledby="tab-geometry" aria-hidden="true">
+                    <div class="view-header">
+                        <h1>Geometry &amp; CAD Parsers</h1>
+                        <p>Load an ASCII STL file or temperature CSV to inspect geometry and nodal results.</p>
+                    </div>
+
+                    <!-- Geometry Quick Start Guide -->
+                    <div class="card card-info" style="margin-bottom: var(--space-3); border-left: 3px solid var(--accent-primary, #2563eb);">
+                        <div class="card-body" style="padding: var(--space-2) var(--space-3); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2);">
+                            <div>
+                                <span class="text-strong" style="font-size: var(--text-sm);">Quick Start:</span>
+                                <span class="text-secondary" style="font-size: var(--text-sm); margin-left: var(--space-2);">1. Select an ASCII STL model &bull; 2. Optionally overlay a temperature point cloud &bull; 3. Left-drag to Orbit, Right-drag to Pan, Scroll to Zoom</span>
+                            </div>
+                            <span class="badge badge-ready">3D Viewport Active</span>
+                        </div>
+                    </div>
+
+                    <div id="geo-error-banner" class="alert alert-danger" style="display: none; margin-bottom: var(--space-3);"></div>
+                    <div id="geo-simplification-notice" class="alert alert-warning" style="display: none; margin-bottom: var(--space-3);"></div>
+
+                    <!-- 3D Viewport Card -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Interactive 3D Geometry Viewport</span>
+                            <div style="display: flex; align-items: center; gap: var(--space-2);">
+                                <span id="geo-loading-indicator" class="spinner" data-icon="spinner" style="display: none;"></span>
+                                <button type="button" id="geo-btn-reset-cam" class="btn btn-secondary btn-sm">Reset Camera</button>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <canvas id="geometry-canvas-3d" style="width: 100%; height: 420px; display: block; background: #0f172a; border-radius: var(--radius-md);"></canvas>
+                        </div>
+                        <div class="card-footer" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3);">
+                            <div style="display: flex; gap: var(--space-3); align-items: center;">
+                                <span class="text-small text-strong">Shading Mode:</span>
+                                <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer;">
+                                    <input type="radio" name="geo-render-mode" value="shaded" checked> Shaded Solid
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer;">
+                                    <input type="radio" name="geo-render-mode" value="wireframe"> Wireframe
+                                </label>
+                                <label style="display: inline-flex; align-items: center; gap: 4px; font-size: 12px; cursor: pointer;">
+                                    <input type="radio" name="geo-render-mode" value="points"> Point Cloud
+                                </label>
+                            </div>
+                            <span class="text-small" style="color: var(--text-secondary);">Controls: Left-drag to Orbit &bull; Right-drag to Pan &bull; Wheel to Zoom</span>
+                        </div>
+                    </div>
+
+                    <!-- Model Selection Controls -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Pre-Packaged Engineering Datasets</span>
+                            <span class="badge badge-ready">Safe Whitelist</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="geo-sample-select">Select ASCII STL Model</label>
+                                    <select id="geo-sample-select" class="select">
+                                        <option value="bracket" selected>Mechanical Bracket (valid_bracket.stl)</option>
+                                        <option value="triangle">Single Triangle (valid_triangle.stl)</option>
+                                        <option value="degenerate">Degenerate Facet Model (degenerate_facet.stl)</option>
+                                    </select>
+                                    <span class="form-hint">C++ reads directly from disk without passing files through 64 KB JSON bridge.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="geo-overlay-select">Temperature Point Cloud Overlay</label>
+                                    <select id="geo-overlay-select" class="select">
+                                        <option value="" selected>None (Mesh Only)</option>
+                                        <option value="nodal_temp">ANSYS Nodal Temperatures (valid_nodal_temperature.csv)</option>
+                                        <option value="thermal_n10">1D FEM Results N=10 (thermal_results_N10.csv)</option>
+                                    </select>
+                                    <span class="form-hint">Colormapped nodes from Blue (T_min) to Red (T_max).</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Matrix -->
+                    <div class="cards-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Mesh Surface Metadata</span>
+                                <span class="badge badge-ready">C++ Parser</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Solid Name:</span>
+                                    <span class="detail-value text-mono" id="geo-stat-solid">valid_bracket</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Triangular Facets:</span>
+                                    <span class="detail-value text-mono" id="geo-stat-triangles">12 (12 total)</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Total Surface Area:</span>
+                                    <span class="detail-value text-mono" id="geo-stat-area">0.003400 m²</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Degenerate Facets:</span>
+                                    <span class="detail-value text-mono"><span id="geo-stat-degenerate" class="badge badge-ready">0</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">Temperature Field Properties</span>
+                                <span class="badge badge-ready">ANSYS CSV</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="detail-row">
+                                    <span class="detail-label">Loaded Nodes:</span>
+                                    <span class="detail-value text-mono" id="geo-stat-nodes">None</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Minimum Temperature:</span>
+                                    <span class="detail-value text-mono" id="geo-stat-mintemp">--</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Maximum Temperature:</span>
+                                    <span class="detail-value text-mono" id="geo-stat-maxtemp">--</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Average Temperature:</span>
+                                    <span class="detail-value text-mono" id="geo-stat-avgtemp">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 3: Thermal Analysis -->
+                <section id="view-thermal" class="view-panel" role="tabpanel" aria-labelledby="tab-thermal" aria-hidden="true">
+                    <div class="view-header">
+                        <h1>1D Steady-State Thermal FEM Analysis</h1>
+                        <p>Heat conduction with uniform internal generation, Dirichlet boundaries, and exact analytical comparison.</p>
+                    </div>
+
+                    <!-- Thermal Workflow Explanation -->
+                    <div class="card card-info" style="margin-bottom: var(--space-3); border-left: 3px solid var(--accent-primary, #2563eb);">
+                        <div class="card-body" style="padding: var(--space-2) var(--space-3); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2);">
+                            <div>
+                                <span class="text-strong" style="font-size: var(--text-sm);">Standard Workflow:</span>
+                                <span class="text-secondary" style="font-size: var(--text-sm); margin-left: var(--space-2);">1. Set rod parameters &rarr; 2. Select mesh size &rarr; 3. Solve FEM &rarr; 4. Compare with exact solution &rarr; 5. Export CSV</span>
+                            </div>
+                            <span class="badge badge-ready">O(h²) Convergence</span>
+                        </div>
+                    </div>
+
+                    <div id="thermal-error-banner" class="alert alert-danger" style="display: none; margin-bottom: var(--space-3);"></div>
+
+                    <!-- Thermal Input Parameters Form -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Rod Geometry &amp; Material Parameters</span>
+                            <div style="display: flex; align-items: center; gap: var(--space-2);">
+                                <span id="thermal-loading-indicator" class="spinner" data-icon="spinner" style="display: none;"></span>
+                                <span id="thermal-convergence-badge" class="badge badge-ready">O(h²) VERIFIED</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="thermal-input-length">Rod Length L (m)</label>
+                                    <input type="number" step="0.1" id="thermal-input-length" class="input cell-numeric" value="1.0">
+                                    <span class="form-hint">Physical rod length in meters (default 1.0 m)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="thermal-input-area">Cross-Section Area A (m²)</label>
+                                    <input type="number" step="0.0001" id="thermal-input-area" class="input cell-numeric" value="0.0001">
+                                    <span class="form-hint">Cross-sectional area (default 0.0001 m² = 1 cm²)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="thermal-input-k">Conductivity k (W/m·K)</label>
+                                    <input type="number" step="1" id="thermal-input-k" class="input cell-numeric" value="10.0">
+                                    <span class="form-hint">Thermal conductivity of material (default 10 W/m·K)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="thermal-input-q">Heat Gen q (W/m³)</label>
+                                    <input type="number" step="1000" id="thermal-input-q" class="input cell-numeric" value="10000.0">
+                                    <span class="form-hint">Uniform volumetric heat generation (default 10,000 W/m³)</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="thermal-input-t0">Left Temp T0 (°C)</label>
+                                    <input type="number" step="5" id="thermal-input-t0" class="input cell-numeric" value="100.0">
+                                    <span class="form-hint">Dirichlet BC at x = 0 (default 100 °C)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="thermal-input-tl">Right Temp TL (°C)</label>
+                                    <input type="number" step="5" id="thermal-input-tl" class="input cell-numeric" value="20.0">
+                                    <span class="form-hint">Dirichlet BC at x = L (default 20 °C)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="thermal-input-n">Elements (N)</label>
+                                    <input type="number" min="1" max="1000" id="thermal-input-n" class="input cell-numeric" value="10">
+                                    <span class="form-hint">1D mesh discretization (default 10 elements)</span>
+                                </div>
+                            </div>
+                            <div class="action-btn-group" style="display: flex; gap: var(--space-2); margin-top: var(--space-2);">
+                                <button type="button" id="thermal-btn-solve" class="btn btn-primary btn-md">Solve FEM</button>
+                                <button type="button" id="thermal-btn-reset" class="btn btn-secondary btn-md">Reset Defaults</button>
+                                <button type="button" id="thermal-btn-export" class="btn btn-secondary btn-md">Export Results CSV</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2D Canvas Temperature Plot -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Temperature Distribution Profile: Exact vs FEM Nodal</span>
+                            <span class="badge badge-ready">Canvas 2D</span>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="thermal-chart-canvas" style="width: 100%; height: 320px; display: block; background: var(--surface-card); border-radius: var(--radius-md); border: 1px solid var(--border-color-subtle);"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Convergence Metrics & Nodal Table -->
+                    <div class="cards-grid stat-grid-4" style="margin-bottom: var(--space-3);">
+                        <div class="stat-widget">
+                            <span class="stat-label">Element Length (h)</span>
+                            <span class="stat-value text-mono" id="thermal-stat-h">0.1000 m</span>
+                            <span class="stat-subtext">Uniform mesh discretization</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Theoretical Midpoint Error</span>
+                            <span class="stat-value text-mono" id="thermal-stat-exp-err">1.250000 °C</span>
+                            <span class="stat-subtext">(q / 8k) * h²</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Actual Max Midpoint Error</span>
+                            <span class="stat-value text-mono" id="thermal-stat-max-err">1.250000 °C</span>
+                            <span class="stat-subtext">Max |T_exact - T_mid|</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Convergence Order</span>
+                            <span class="stat-value text-mono">O(h²)</span>
+                            <span class="stat-subtext">Exact Thomas algorithm</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Nodal Temperature Discretization Table</span>
+                            <span class="badge">Nodal Evaluation</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Node</th>
+                                        <th>Position x (m)</th>
+                                        <th>FEM Temperature (°C)</th>
+                                        <th>Exact Analytical (°C)</th>
+                                        <th>Absolute Error (°C)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="thermal-table-body">
+                                    <!-- Populated dynamically by thermal_view.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 4: Performance -->
+                <section id="view-performance" class="view-panel" role="tabpanel" aria-labelledby="tab-performance" aria-hidden="true">
+                    <div class="view-header">
+                        <h1>Multicore Performance &amp; Benchmarking</h1>
+                        <p>Benchmark parallel vs serial batch execution of 1D steady-state thermal FEM rod simulations using lock-free dynamic work stealing.</p>
+                    </div>
+
+                    <!-- Benchmark Architecture & Concept Guidance -->
+                    <div class="card card-info" style="margin-bottom: var(--space-3); border-left: 3px solid var(--accent-primary, #2563eb);">
+                        <div class="card-body" style="padding: var(--space-2) var(--space-3); font-size: var(--text-sm);">
+                            <div style="margin-bottom: var(--space-1);"><span class="text-strong">Benchmark Architecture:</span> <span class="text-secondary">Solves a batch of randomized 1D thermal FEM rod problems across worker threads.</span></div>
+                            <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); font-size: var(--text-xs); color: var(--text-secondary);">
+                                <span>&bull; <strong>Serial:</strong> 1 worker baseline execution on main thread.</span>
+                                <span>&bull; <strong>Parallel:</strong> Atomic lock-free work-stealing across W workers.</span>
+                                <span>&bull; <strong>Verification:</strong> Asserts |T_parallel - T_serial| &le; 10⁻⁸ °C.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="perf-error-banner" class="alert alert-danger" style="display: none; margin-bottom: var(--space-3);"></div>
+                    <div id="perf-running-notice" class="alert alert-info" style="display: none; margin-bottom: var(--space-3);"></div>
+
+                    <!-- Host Hardware Detection Grid -->
+                    <div class="cards-grid stat-grid-4" style="margin-bottom: var(--space-3);">
+                        <div class="stat-widget">
+                            <span class="stat-label">Detected CPU Model</span>
+                            <span class="stat-value" id="perf-stat-cpu">Detecting CPU...</span>
+                            <span class="stat-subtext">Host processor descriptor</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Physical Cores</span>
+                            <span class="stat-value" id="perf-stat-cores">Detecting...</span>
+                            <span class="stat-subtext">Hardware cores detected</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Logical Threads</span>
+                            <span class="stat-value" id="perf-stat-threads">Detecting...</span>
+                            <span class="stat-subtext">Concurrent worker limit</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Physical RAM</span>
+                            <span class="stat-value" id="perf-stat-ram">Detecting...</span>
+                            <span class="stat-subtext">Available host memory</span>
+                        </div>
+                    </div>
+
+                    <!-- Benchmark Controls Card -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Benchmark Workload Configuration</span>
+                            <span id="perf-loading-indicator" class="spinner" data-icon="spinner" style="display: none;"></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="perf-input-cases">Batch Case Count</label>
+                                    <input type="number" min="1" max="1000" id="perf-input-cases" class="input cell-numeric" value="100">
+                                    <span class="form-hint">Number of independent rod problems to solve (default 100)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="perf-input-elements">Elements per Rod</label>
+                                    <input type="number" min="10" max="500" id="perf-input-elements" class="input cell-numeric" value="80">
+                                    <span class="form-hint">Mesh density for each rod problem (default 80 elements)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="perf-input-seed">Deterministic Random Seed</label>
+                                    <input type="number" id="perf-input-seed" class="input cell-numeric" value="42">
+                                    <span class="form-hint">Seed for pseudo-random batch reproducibility (default 42)</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: var(--space-2); margin-bottom: var(--space-3);">
+                                <span class="text-small text-strong" style="display: block; margin-bottom: var(--space-1);">Worker Concurrency Targets:</span>
+                                <div style="display: flex; flex-wrap: wrap; gap: var(--space-4);">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" name="perf-worker" value="1" class="checkbox-input" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">1 Worker (Serial Baseline)</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" name="perf-worker" value="2" class="checkbox-input" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">2 Workers</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" name="perf-worker" value="3" class="checkbox-input" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">3 Workers</span>
+                                    </label>
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" name="perf-worker" value="4" class="checkbox-input" checked>
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-label">4 Workers</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="action-btn-group" style="display: flex; gap: var(--space-2);">
+                                <button type="button" id="perf-btn-run" class="btn btn-primary btn-md">Run Multicore Benchmark</button>
+                                <button type="button" id="perf-btn-export-raw" class="btn btn-secondary btn-md">Export Raw CSV</button>
+                                <button type="button" id="perf-btn-export-summary" class="btn btn-secondary btn-md">Export Summary CSV</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Speedup Scaling Canvas Chart -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Parallel Speedup vs Ideal Linear Scaling</span>
+                            <span id="perf-overall-status" class="badge badge-ready">READY</span>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="perf-chart-canvas" style="width: 100%; height: 280px; display: block; background: var(--surface-card); border-radius: var(--radius-md); border: 1px solid var(--border-color-subtle);"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Summary & Raw Tables -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Worker Scaling Performance Summary</span>
+                            <span class="badge badge-ready">5 Repetitions (Median)</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Execution Mode</th>
+                                        <th>Workers</th>
+                                        <th>Median Time (ms)</th>
+                                        <th>Speedup</th>
+                                        <th>Efficiency</th>
+                                        <th>Numerical Correctness</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="perf-summary-table-body">
+                                    <!-- Populated dynamically by perf_view.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Raw Repetition Measurement Matrix</span>
+                            <span class="badge">Individual Runs</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Execution Mode</th>
+                                        <th>Repetition</th>
+                                        <th>Elapsed Time (ms)</th>
+                                        <th>Max Deviation vs Serial</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="perf-raw-table-body">
+                                    <!-- Populated dynamically by perf_view.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 5: Hardware -->
+                <section id="view-hardware" class="view-panel" role="tabpanel" aria-labelledby="tab-hardware" aria-hidden="true">
+                    <div class="view-header">
+                        <h1>Hardware Integration &amp; Protocol Adapters <span class="badge badge-simulated">SIMULATED</span></h1>
+                        <p>No physical hardware is connected. Device discovery, connection, telemetry, and fault recovery are simulated for this prototype.</p>
+                    </div>
+
+                    <!-- Hardware Simulation Notice & Recovery Instructions -->
+                    <div class="card card-info" style="margin-bottom: var(--space-3); border-left: 3px solid var(--accent-primary, #2563eb);">
+                        <div class="card-body" style="padding: var(--space-2) var(--space-3); font-size: var(--text-sm);">
+                            <div style="margin-bottom: var(--space-1);"><span class="text-strong">Simulation Notice:</span> <span class="text-secondary">All adapters (STM32F407G-DISC1, Digilent Basys 3, Digilent JTAG-HS2) execute in software simulation mode. No physical hardware is connected.</span></div>
+                            <div style="font-size: var(--text-xs); color: var(--text-secondary);"><strong>Fault Recovery Testing:</strong> 1. Check a fault box &rarr; 2. Click Connect Channel (enters ERROR state) &rarr; 3. Click Reset Fault Flags (Recover) to restore CONNECTED state.</div>
+                        </div>
+                    </div>
+
+                    <div id="hw-error-banner" class="alert alert-danger" style="display: none; margin-bottom: var(--space-3);"></div>
+
+                    <!-- Device Cards Grid -->
+                    <div id="hw-device-cards-container" class="cards-grid" style="margin-bottom: var(--space-3);">
+                        <!-- Populated dynamically by hardware_view.js -->
+                    </div>
+
+                    <!-- Hardware Channel Control Card -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Channel Controls &amp; Simulation Fault Injection <span class="badge badge-simulated">SIMULATED</span></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="hw-device-select">Target Device Adapter</label>
+                                    <select id="hw-device-select" class="select">
+                                        <option value="stm32f407g-disc1-01" selected>STM32F407G Discovery (MCU)</option>
+                                        <option value="basys3-xc7a35t-01">Digilent Basys 3 (FPGA)</option>
+                                        <option value="jtag-hs2-adapter-01">Digilent JTAG-HS2 (JTAG)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Simulation Fault Injection</label>
+                                    <div style="display: flex; gap: var(--space-3); margin-top: var(--space-1);">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="hw-toggle-sim-timeout" class="checkbox-input">
+                                            <span class="checkbox-custom"></span>
+                                            <span class="checkbox-label">Simulate Timeout</span>
+                                        </label>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" id="hw-toggle-sim-failure" class="checkbox-input">
+                                            <span class="checkbox-custom"></span>
+                                            <span class="checkbox-label">Simulate Connection Failure</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="action-btn-group" style="display: flex; gap: var(--space-2); margin-top: var(--space-2);">
+                                <button type="button" id="hw-btn-connect" class="btn btn-primary btn-md">Connect Channel</button>
+                                <button type="button" id="hw-btn-disconnect" class="btn btn-secondary btn-md">Disconnect</button>
+                                <button type="button" id="hw-btn-telemetry" class="btn btn-secondary btn-md">Read Telemetry</button>
+                                <button type="button" id="hw-btn-recover" class="btn btn-secondary btn-md">Reset Fault Flags (Recover)</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Telemetry Timeline Plot & Stats -->
+                    <div class="cards-grid stat-grid-4" style="margin-bottom: var(--space-3);">
+                        <div class="stat-widget">
+                            <span class="stat-label">Board Temperature (SIMULATED)</span>
+                            <span class="stat-value text-mono" id="hw-stat-temp">--</span>
+                            <span class="stat-subtext">Internal thermal sensor</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Core Voltage (SIMULATED)</span>
+                            <span class="stat-value text-mono" id="hw-stat-volt">--</span>
+                            <span class="stat-subtext">VDD / VCORE rail</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Power Consumption (SIMULATED)</span>
+                            <span class="stat-value text-mono" id="hw-stat-power">--</span>
+                            <span class="stat-subtext">Computed instantaneous power</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Packet Sequence #</span>
+                            <span class="stat-value text-mono" id="hw-stat-seq">--</span>
+                            <span class="stat-subtext">Monotonic packet counter</span>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Live Sensor Telemetry Timeline <span class="badge badge-simulated">SIMULATED</span></span>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="hardware-telemetry-canvas" style="width: 100%; height: 260px; display: block; background: var(--surface-card); border-radius: var(--radius-md); border: 1px solid var(--border-color-subtle);"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Command Execution Console -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Device Command Console</span>
+                            <span class="badge badge-ready">Strict Capability Whitelist</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label" for="hw-cmd-select">Supported Command</label>
+                                    <select id="hw-cmd-select" class="select">
+                                        <!-- Populated dynamically based on device capabilities -->
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 2;">
+                                    <label class="form-label" for="hw-cmd-payload">Command Payload (Optional)</label>
+                                    <input type="text" id="hw-cmd-payload" class="input" placeholder="e.g. 0x08000000">
+                                </div>
+                                <div class="form-group" style="align-self: flex-end;">
+                                    <button type="button" id="hw-btn-send-cmd" class="btn btn-primary btn-md">Dispatch Command</button>
+                                </div>
+                            </div>
+
+                            <div id="hw-console-output" style="margin-top: var(--space-2); height: 110px; overflow-y: auto; background: #0f172a; color: #38bdf8; font-family: var(--font-mono); font-size: 12px; padding: var(--space-2); border-radius: var(--radius-sm);">
+                                <div>[SYS] Hardware command console initialized. Select an adapter command to dispatch.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 6: Backpropagation -->
+                <section id="view-backprop" class="view-panel" role="tabpanel" aria-labelledby="tab-backprop" aria-hidden="true">
+                    <div class="view-header">
+                        <h1>Backpropagation &amp; Numerical Verification</h1>
+                        <p>Verify analytical gradients against central finite differences, then train the regression network using gradient descent.</p>
+                    </div>
+
+                    <!-- Backpropagation Workflow Explanation -->
+                    <div class="card card-info" style="margin-bottom: var(--space-3); border-left: 3px solid var(--accent-primary, #2563eb);">
+                        <div class="card-body" style="padding: var(--space-2) var(--space-3); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2);">
+                            <div>
+                                <span class="text-strong" style="font-size: var(--text-sm);">Standard Workflow:</span>
+                                <span class="text-secondary" style="font-size: var(--text-sm); margin-left: var(--space-2);">Verify Gradients &rarr; Train &rarr; Inspect Loss &rarr; Export</span>
+                            </div>
+                            <span class="badge badge-ready">Simultaneous &theta; Updates</span>
+                        </div>
+                    </div>
+
+                    <div id="bp-error-banner" class="alert alert-danger" style="display: none; margin-bottom: var(--space-3);"></div>
+
+                    <!-- Regression Problem Parameters Card -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Single-Sample Regression Network (h = tanh(w*x + b), y_pred = v*h + c)</span>
+                            <span id="bp-loading-indicator" class="spinner" data-icon="spinner" style="display: none;"></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="bp-input-x">Input Sample (x)</label>
+                                    <input type="number" step="0.1" id="bp-input-x" class="input cell-numeric" value="1.0">
+                                    <span class="form-hint">Input feature value (default 1.0)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="bp-input-y">Target Output (y)</label>
+                                    <input type="number" step="0.1" id="bp-input-y" class="input cell-numeric" value="2.0">
+                                    <span class="form-hint">Expected target output (default 2.0)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="bp-input-eta">Learning Rate (&eta;)</label>
+                                    <input type="number" step="0.01" id="bp-input-eta" class="input cell-numeric" value="0.1">
+                                    <span class="form-hint">Gradient descent step scale (default 0.1)</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="bp-input-w">Hidden Weight (w)</label>
+                                    <input type="number" step="0.05" id="bp-input-w" class="input cell-numeric" value="0.5">
+                                    <span class="form-hint">Weight w coordinate (default 0.5)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="bp-input-b">Hidden Bias (b)</label>
+                                    <input type="number" step="0.05" id="bp-input-b" class="input cell-numeric" value="0.0">
+                                    <span class="form-hint">Bias b coordinate (default 0.0)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="bp-input-v">Output Weight (v)</label>
+                                    <input type="number" step="0.05" id="bp-input-v" class="input cell-numeric" value="1.0">
+                                    <span class="form-hint">Weight v coordinate (default 1.0)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="bp-input-c">Output Bias (c)</label>
+                                    <input type="number" step="0.05" id="bp-input-c" class="input cell-numeric" value="0.0">
+                                    <span class="form-hint">Bias c coordinate (default 0.0)</span>
+                                </div>
+                            </div>
+                            <div class="action-btn-group" style="display: flex; gap: var(--space-2); margin-top: var(--space-2);">
+                                <button type="button" id="bp-btn-verify" class="btn btn-primary btn-md">Verify Analytical Gradients</button>
+                                <button type="button" id="bp-btn-train" class="btn btn-secondary btn-md">Train 100 Steps</button>
+                                <button type="button" id="bp-btn-step" class="btn btn-secondary btn-md">Single Step</button>
+                                <button type="button" id="bp-btn-reset" class="btn btn-secondary btn-md">Reset Parameters</button>
+                                <button type="button" id="bp-btn-export" class="btn btn-secondary btn-md">Export Loss CSV</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytical vs Finite Difference Verification -->
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Gradient Verification: Manual Chain Rule vs Central Finite Difference</span>
+                            <div style="display: flex; align-items: center; gap: var(--space-2);">
+                                <span id="bp-verif-maxerr" class="text-small text-mono" style="color: var(--text-secondary);"></span>
+                                <span id="bp-verif-badge" class="badge badge-ready">CHAIN RULE VERIFIED</span>
+                            </div>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Parameter Derivative</th>
+                                        <th>Analytical Gradient (Chain Rule)</th>
+                                        <th>Numerical Gradient (Central Difference)</th>
+                                        <th>Absolute Error (&Delta;)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bp-gradient-table-body">
+                                    <!-- Populated dynamically by backprop_view.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Training Stats & Loss Trajectory Chart -->
+                    <div class="cards-grid stat-grid-4" style="margin-bottom: var(--space-3);">
+                        <div class="stat-widget">
+                            <span class="stat-label">Initial Loss (Step 1)</span>
+                            <span class="stat-value text-mono" id="bp-stat-init-loss">1.182542</span>
+                            <span class="stat-subtext">Before first parameter update</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Final Loss (Step 100)</span>
+                            <span class="stat-value text-mono" id="bp-stat-final-loss">0.000000</span>
+                            <span class="stat-subtext">After 100 simultaneous updates</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Recorded Steps</span>
+                            <span class="stat-value text-mono" id="bp-stat-steps">100</span>
+                            <span class="stat-subtext">Exactly 100 CSV records</span>
+                        </div>
+                        <div class="stat-widget">
+                            <span class="stat-label">Simultaneous Updates</span>
+                            <span class="stat-value text-mono">&theta; - &eta;&nabla;J</span>
+                            <span class="stat-subtext">All 4 gradients computed before update</span>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: var(--space-3);">
+                        <div class="card-header">
+                            <span class="card-title">Training Loss Trajectory: J = 0.5(y_pred - y)²</span>
+                            <span class="badge badge-ready">Canvas 2D</span>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="backprop-loss-canvas" style="width: 100%; height: 300px; display: block; background: var(--surface-card); border-radius: var(--radius-md); border: 1px solid var(--border-color-subtle);"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 100-Step Trajectory Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Training Step Trajectory (Sample Records)</span>
+                            <span class="badge">1-Indexed Steps</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Step</th>
+                                        <th>Loss J</th>
+                                        <th>Prediction y_pred</th>
+                                        <th>Weight w</th>
+                                        <th>Bias b</th>
+                                        <th>Weight v</th>
+                                        <th>Bias c</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bp-history-table-body">
+                                    <!-- Populated dynamically by backprop_view.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Scripts -->
+    <script src="js/icons.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/modules/chart_engine.js"></script>
+    <script src="js/modules/canvas_3d.js"></script>
+    <script src="js/modules/geometry_view.js"></script>
+    <script src="js/modules/thermal_view.js"></script>
+    <script src="js/modules/perf_view.js"></script>
+    <script src="js/modules/hardware_view.js"></script>
+    <script src="js/modules/backprop_view.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

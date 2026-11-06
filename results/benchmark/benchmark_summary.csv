@@ -1,0 +1,6 @@
+execution_mode,worker_count,median_time_ms,speedup,efficiency,correctness_status
+"Serial",1,2.7199,1.0000,100.00%,PASSED
+"Parallel (1 workers)",1,4.2614,0.6383,63.83%,PASSED
+"Parallel (2 workers)",2,3.4260,0.7939,39.69%,PASSED
+"Parallel (3 workers)",3,1.5638,1.7393,57.98%,PASSED
+"Parallel (4 workers)",4,0.7863,3.4591,86.48%,PASSED
