@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Unified Engineering Workbench — Final Technical Report</title>
+<style>
+
+@page {
+    size: A4 portrait;
+    margin: 12mm 14mm 14mm 14mm;
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 8pt;
+        color: #718096;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 8.5pt;
+    line-height: 1.30;
+    color: #1a202c;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+.doc-title {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #1a365d;
+    margin: 0 0 6px 0;
+    line-height: 1.2;
+}
+
+.section-title {
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: #2b6cb0;
+    border-bottom: 1.5px solid #cbd5e0;
+    padding-bottom: 3px;
+    margin: 10px 0 4px 0;
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+.subsection-title {
+    font-size: 9.8pt;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 10px 0 4px 0;
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+.sub-subsection-title {
+    font-size: 9pt;
+    font-weight: 600;
+    color: #4a5568;
+    margin: 8px 0 3px 0;
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+p {
+    margin: 0 0 6px 0;
+    text-align: justify;
+}
+
+.report-list {
+    margin: 2px 0 8px 18px;
+    padding: 0;
+}
+
+.report-list li {
+    margin-bottom: 3px;
+    text-align: justify;
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background: #cbd5e0;
+    margin: 10px 0;
+}
+
+.table-container {
+    margin: 6px 0 10px 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.9pt;
+    line-height: 1.25;
+}
+
+th, td {
+    border: 1px solid #cbd5e0;
+    padding: 4px 6px;
+    text-align: left;
+}
+
+th {
+    background-color: #ebf8ff;
+    color: #2b6cb0;
+    font-weight: 600;
+}
+
+tr:nth-child(even) td {
+    background-color: #f7fafc;
+}
+
+.diagram-box {
+    background-color: #f7fafc;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin: 8px 0;
+    font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+    font-size: 6.8pt;
+    line-height: 1.15;
+    color: #2d3748;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    overflow-x: hidden;
+}
+
+code {
+    font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+    font-size: 8pt;
+    background-color: #edf2f7;
+    padding: 1px 3px;
+    border-radius: 2px;
+    color: #6b46c1;
+}
+
+.math-display {
+    text-align: center;
+    margin: 6px 0;
+    padding: 3px 0;
+    font-size: 9pt;
+    font-family: 'Cambria Math', 'Times New Roman', serif;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    color: #1a202c;
+}
+
+.math-inline {
+    font-family: 'Cambria Math', 'Times New Roman', serif;
+    font-size: 9pt;
+}
+
+.frac {
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0 2px;
+    font-size: 85%;
+}
+
+.num {
+    border-bottom: 1px solid #4a5568;
+    padding-bottom: 1px;
+}
+
+.den {
+    padding-top: 1px;
+}
+
+.matrix {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 4px;
+    vertical-align: middle;
+}
+
+.bracket {
+    font-size: 150%;
+    font-weight: 300;
+}
+
+.matrix-rows {
+    display: inline-flex;
+    flex-direction: column;
+    padding: 0 2px;
+}
+
+.matrix-row {
+    display: flex;
+    justify-content: space-around;
+}
+
+.matrix-cell {
+    padding: 1px 4px;
+    min-width: 14px;
+    text-align: center;
+}
+
+</style>
+</head>
+<body>
+<h1 class="doc-title">Unified Engineering Workbench — Final Technical Report</h1>
+<p><strong>Project:</strong> PASS Science Works R&D Internship 2026–2027</p>
+<p><strong>System:</strong> Unified Engineering Workbench (v1.0.0)</p>
+<p><strong>Target Architecture:</strong> Windows 11 x64 / Windows 10 x64 (Build 1809+)</p>
+<p><strong>Toolchain:</strong> Microsoft Visual C++ (MSVC 19.51.36260.0, C++17), CMake 3.20+, Microsoft Edge WebView2 Evergreen Runtime</p>
+<p><strong>Verification Census:</strong> 7 Test Suites, 638 Passing Assertions (100% Pass Rate)</p>
+<hr class="divider" />
+<h2 class="section-title">Executive Summary</h2>
+<p>The <strong>Unified Engineering Workbench</strong> is a high-performance, modular engineering workstation developed to address demanding computational, visual, and hardware-interfacing engineering tasks. The system couples a native C++17 numerical and simulation backend with an offline, air-gapped modern user interface hosted inside a native Win32 desktop application via the Microsoft Edge WebView2 Evergreen Runtime.</p>
+<p>The workbench integrates five core engineering modules:</p>
+<ol class="report-list">
+<li><strong>Geometry Processing:</strong> ASCII STL parsing, bounding box and normal calculation, degenerate facet detection, and interactive 3D WebGL orbit visualization with scalar temperature field colormapping.</li>
+<li><strong>Thermal Analysis:</strong> 1D steady-state thermal Finite Element Method (FEM) solver featuring linear two-node elements, boundary condition formulation, and an <span class="math-inline">O(N)</span> Thomas algorithm (TDMA) solver exhibiting verified <span class="math-inline">O(h<sup>2</sup>)</span> midpoint convergence against exact analytical solutions.</li>
+<li><strong>Multicore Benchmarking:</strong> Work-stealing batch simulation executor evaluating serial versus parallel execution across 1, 2, 3, and 4 worker threads, achieving up to a 3.46x speedup (86.48% parallel efficiency) while guaranteeing strict numerical equivalence (<span class="math-inline">|T<sub><span class="text">parallel</span></sub> - T<sub><span class="text">serial</span></sub>| &le; 10<sup>-8 &deg;</sup><span class="text">C</span></span>).</li>
+<li><strong>Hardware Integration:</strong> Extensible hardware abstraction layer providing simulated device drivers for the STM32F407G-DISC1 microcontroller, Digilent Basys 3 FPGA, and Digilent JTAG-HS2 adapter, featuring real-time telemetry streaming, register inspection, and automated fault-recovery state machines.</li>
+<li><strong>Backpropagation Engine:</strong> Single-sample neural network regression engine deriving exact analytical gradients via the multivariate chain rule, verified against central finite differences to within <span class="math-inline">|&Delta;| &le; 1.12 &times; 10<sup>-10</sup></span>, and demonstrating monotonic loss convergence from <span class="math-inline">J<sub>0</sub> &approx; 1.1825</span> to <span class="math-inline">J<sub>100</sub> < 10<sup>-12</sup></span> over 100 training steps.</li>
+</ol>
+<p>All engineering capabilities are packaged into a standalone, zero-dependency distribution archive (<code>UnifiedEngineeringWorkbench-1.0.0-win64.zip</code>) featuring a dedicated Win32 launcher (<code>Launch.exe</code>) requiring no terminal interaction, compiler installations, or administrative privileges.</p>
+<hr class="divider" />
+<h2 class="section-title">1. System Architecture & Design Principles</h2>
+<p>The Unified Engineering Workbench adheres to a decoupled, multi-tier architectural pattern separating algorithmic computation, platform integration, and user presentation:</p>
+<pre class="diagram-box"><code>+---------------------------------------------------------------------------------------+
+|                                    USER INTERFACE                                     |
+|  +---------------------------------------------------------------------------------+  |
+|  |           Air-Gapped HTML5 / Modern CSS3 / Native ES6+ JavaScript               |  |
+|  |   - 3D WebGL Orbit Viewport (canvas_3d.js)     - High-DPI Charts (chart_engine.js)|  |
+|  |   - Design System Tokens (tokens.css)         - Multi-Viewport Responsive Layout|  |
+|  +---------------------------------------------------------------------------------+  |
++-------------------------------------------|-------------------------------------------+
+                                            | Asynchronous JSON IPC Bridge
+                                            | (Action Allowlist, No Direct Path Access)
++-------------------------------------------v-------------------------------------------+
+|                              WIN32 DESKTOP APPLICATION HOST                           |
+|  +---------------------------------------------------------------------------------+  |
+|  |  workbench_desktop.exe / Launch.exe (Win32 API + Microsoft Edge WebView2)       |  |
+|  |   - Native Common Dialogs (GetOpenFileNameW, GetSaveFileNameW)                  |  |
+|  |   - Thread-Safe JSON Message Dispatcher                                         |  |
+|  |   - Evergreen Runtime Environment Initialization &amp; Fallback Dialogs             |  |
+|  +---------------------------------------------------------------------------------+  |
++-------------------------------------------|-------------------------------------------+
+                                            | Direct In-Process C++17 Function Calls
++-------------------------------------------v-------------------------------------------+
+|                                   NATIVE C++17 CORE                                   |
+|  +---------------------------------------------------------------------------------+  |
+|  |  [Geometry Parser]  [Thermal FEM Solver]  [Benchmark Pool]  [Hardware Registry] |  |
+|  |  [Backprop Engine]  [System Metadata]     [Math Utilities]  [Thomas Algorithm]  |  |
+|  +---------------------------------------------------------------------------------+  |
++---------------------------------------------------------------------------------------+</code></pre>
+<h3 class="subsection-title">1.1 Air-Gapped Frontend Independence</h3>
+<p>To guarantee reliable offline deployment across classified, industrial, or air-gapped workstations, the frontend layer eliminates all external dependencies:</p>
+<ul class="report-list">
+<li><strong>Zero External JavaScript Frameworks:</strong> No React, Angular, Vue, or jQuery. The entire application shell is driven by native ES6+ modules.</li>
+<li><strong>Zero 3D or Charting Dependencies:</strong> Three.js and Chart.js were rejected. The 3D viewport was constructed using native WebGL vertex and fragment shaders with a 2D HTML5 Canvas fallback. The charting subsystem was built from scratch to render high-DPI responsive vector curves, bars, and dual-axis plots.</li>
+<li><strong>Zero Remote Assets:</strong> No Google Fonts, CDN stylesheets, or remote icon fonts are loaded. All icons are embedded inline as scalable SVG symbols (<code>icons.js</code>).</li>
+</ul>
+<h3 class="subsection-title">1.2 Secure Host Bridge & Memory Safety</h3>
+<p>Interaction between the webview and the native C++ backend is mediated by <code>HostBridge</code>:</p>
+<ul class="report-list">
+<li><strong>Strict Allowlist:</strong> Incoming JSON messages must match explicit permitted action identifiers (<code>import_stl</code>, <code>run_thermal_fem</code>, <code>run_benchmark</code>, <code>connect_device</code>, etc.).</li>
+<li><strong>No Arbitrary Path Traversal:</strong> The webview is strictly forbidden from supplying arbitrary local filesystem paths. File imports and exports trigger native Win32 common dialogs (<code>GetOpenFileNameW</code>, <code>GetSaveFileNameW</code>) executed on the native UI thread.</li>
+<li><strong>Exception & Thread Safety:</strong> Long-running operations (such as batch benchmarks) execute on detached background worker threads, notifying the main UI thread via thread-safe Windows message dispatching without blocking the user interface.</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">2. Engineering Modules & Algorithmic Implementation</h2>
+<h3 class="subsection-title">2.1 Geometry Processing Engine (Task A)</h3>
+<p>The geometry module (<code>src/geometry/</code>) provides parsing, geometric analysis, and spatial mapping for 3D meshes:</p>
+<ul class="report-list">
+<li><strong>ASCII STL Parser:</strong> Parses solid names, facet normal vectors, and triangle vertex coordinates. Calculates bounding boxes <span class="math-inline">(x<sub>min</sub>, x<sub>max</sub>, y<sub>min</sub>, y<sub>max</sub>, z<sub>min</sub>, z<sub>max</sub>)</span> and surface area.</li>
+<li><strong>Degenerate Facet Detection:</strong> Automatically detects colinear or zero-area triangles using cross-product area evaluation (<span class="math-inline">&Vert;<strong>e</strong><sub>1</sub> &times; <strong>e</strong><sub>2</sub>&Vert; < 10<sup>-12</sup></span>) and surfaces diagnostic warnings without halting valid geometry processing.</li>
+<li><strong>CSV Nodal Temperature Mapping:</strong> Parses external nodal temperature distribution CSV files and associates scalar temperature values with 3D mesh vertices, generating continuous colormapped point clouds for visual inspection.</li>
+</ul>
+<h3 class="subsection-title">2.2 1D Steady-State Thermal FEM Solver (Task B)</h3>
+<p>The thermal module (<code>src/thermal/</code>) solves the 1D steady-state heat conduction equation with uniform volumetric heat generation:</p>
+<div class="math-display">-k <span class="frac"><span class="num">d<sup>2</sup> T</span><span class="den">dx<sup>2</sup></span></span> = q, &nbsp;&nbsp; x &isin; [0, L]</div>
+<p>Subject to essential Dirichlet boundary conditions <span class="math-inline">T(0) = T<sub>0</sub></span> and <span class="math-inline">T(L) = T<sub>L</sub></span>.</p>
+<h4 class="sub-subsection-title">Numerical Formulation</h4>
+<ul class="report-list">
+<li><strong>Two-Node Linear Elements:</strong> Partitioning <span class="math-inline">[0, L]</span> into <span class="math-inline">N</span> uniform elements of length <span class="math-inline">h = L/N</span>.</li>
+</ul>
+<div class="math-display"><strong>K</strong><sup>(e)</sup> = <span class="frac"><span class="num">k A</span><span class="den">h</span></span> <span class="matrix"><span class="bracket">[</span><span class="matrix-rows"><span class="matrix-row"><span class="matrix-cell"><span class="math-inline">1</span></span><span class="matrix-cell"><span class="math-inline">-1</span></span></span><span class="matrix-row"><span class="matrix-cell"><span class="math-inline">-1</span></span><span class="matrix-cell"><span class="math-inline">1</span></span></span></span><span class="bracket">]</span></span>, &nbsp;&nbsp; <strong>F</strong><sup>(e)</sup> = <span class="frac"><span class="num">q A h</span><span class="den">2</span></span> <span class="matrix"><span class="bracket">[</span><span class="matrix-rows"><span class="matrix-row"><span class="matrix-cell"><span class="math-inline">1</span></span></span><span class="matrix-row"><span class="matrix-cell"><span class="math-inline">1</span></span></span></span><span class="bracket">]</span></span></div>
+<ul class="report-list">
+<li><strong>Thomas Algorithm (TDMA):</strong> The global tridiagonal stiffness matrix is assembled and solved in <span class="math-inline">O(N)</span> operations with zero external linear algebra dependencies.</li>
+<li><strong>Exact Analytical Solution:</strong></li>
+</ul>
+<div class="math-display">T<sub><span class="text">exact</span></sub>(x) = T<sub>0</sub> - <span class="frac"><span class="num">T<sub>0</sub> - T<sub>L</sub></span><span class="den">L</span></span> x + <span class="frac"><span class="num">q</span><span class="den">2k</span></span> x (L - x)</div>
+<p>For test parameters (<span class="math-inline">L=1<span class="text">m</span>, A=10<sup>-4</sup><span class="text">m</span><sup>2</sup>, k=10<span class="text">W/(m</span>&middot;<span class="text">K)</span>, q=10<sup>4</sup><span class="text">W/m</span><sup>3</sup>, T<sub>0</sub>=100^&deg;<span class="text">C</span>, T<sub>L</sub>=20^&deg;<span class="text">C</span></span>):</p>
+<div class="math-display">T<sub><span class="text">exact</span></sub>(x) = 100 + 420x - 500x<sup>2</sup></div>
+<ul class="report-list">
+<li><strong>Nodal Exactness vs. Midpoint Convergence:</strong> On uniform grids, the central difference operator has zero truncation error for quadratic polynomials; hence, finite element nodal temperatures match the exact solution to machine precision (<span class="math-inline">&approx; 10<sup>-13</sup></span>). True discretization error is piecewise linear interpolation error, maximized at element midpoints:</li>
+</ul>
+<div class="math-display">E<sub>max</sub>(N) = <span class="frac"><span class="num">q</span><span class="den">8k</span></span> h<sup>2</sup> = <span class="frac"><span class="num">125.0</span><span class="den">N<sup>2</sup></span></span></div>
+<p>Empirical testing across <span class="math-inline">N &isin; \{10, 20, 40, 80\}</span> confirmed exact <span class="math-inline">O(h<sup>2</sup>)</span> quadratic convergence (<span class="math-inline">1.25^&deg;<span class="text">C</span> &rarr; 0.3125^&deg;<span class="text">C</span> &rarr; 0.078125^&deg;<span class="text">C</span> &rarr; 0.019531^&deg;<span class="text">C</span></span>).</p>
+<h3 class="subsection-title">2.3 Multicore Performance & Benchmarking (Task D)</h3>
+<p>The performance subsystem (<code>src/performance/</code>) evaluates parallel scalability using batch thermal simulations:</p>
+<ul class="report-list">
+<li><strong>Workload Architecture:</strong> Batch of 200 independent physical rod configurations (80 elements each, total 15,800 equations per run) generated using <code>std::mt19937_64</code> with fixed seed <code>42</code>.</li>
+<li><strong>Dynamic Work-Stealing Queue:</strong> Worker threads execute an atomic fetch-and-add loop (<code>next_index.fetch_add(1)</code>) to claim simulation cases dynamically. Pre-allocated disjoint result buffers prevent memory write contention and eliminate mutex locking.</li>
+<li><strong>Empirical Host Results:</strong> Measured on a 13th Gen Intel Core i5-13420H (8 physical cores, 12 logical processors, 16 GB RAM) under Windows 11 x64:</li>
+</ul>
+<div class="table-container"><table>
+<thead><tr>
+<th>Mode</th>
+<th>Workers (<span class="math-inline">W</span>)</th>
+<th>Median Time (<span class="math-inline">T</span>)</th>
+<th>Speedup</th>
+<th>Efficiency</th>
+<th>Max Difference (<span class="math-inline">&Delta;</span>)</th>
+<th>Status</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Serial</strong></td>
+<td>1</td>
+<td>2.72 ms</td>
+<td>1.00x</td>
+<td>100.00%</td>
+<td>Reference</td>
+<td>PASSED</td>
+</tr>
+<tr>
+<td><strong>Parallel</strong></td>
+<td>1</td>
+<td>4.26 ms</td>
+<td>0.64x</td>
+<td>63.83%</td>
+<td><span class="math-inline">0.0 &mu;^&deg;<span class="text">C</span></span></td>
+<td>PASSED</td>
+</tr>
+<tr>
+<td><strong>Parallel</strong></td>
+<td>2</td>
+<td>3.43 ms</td>
+<td>0.79x</td>
+<td>39.69%</td>
+<td><span class="math-inline">0.0 &mu;^&deg;<span class="text">C</span></span></td>
+<td>PASSED</td>
+</tr>
+<tr>
+<td><strong>Parallel</strong></td>
+<td>3</td>
+<td>1.56 ms</td>
+<td>1.74x</td>
+<td>57.98%</td>
+<td><span class="math-inline">0.0 &mu;^&deg;<span class="text">C</span></span></td>
+<td>PASSED</td>
+</tr>
+<tr>
+<td><strong>Parallel</strong></td>
+<td>4</td>
+<td>0.79 ms</td>
+<td><strong>3.46x</strong></td>
+<td><strong>86.48%</strong></td>
+<td><span class="math-inline">0.0 &mu;^&deg;<span class="text">C</span></span></td>
+<td>PASSED</td>
+</tr>
+</tbody>
+</table></div>
+<ul class="report-list">
+<li><strong>Numerical Equivalence Guarantee:</strong> Maximum absolute difference <span class="math-inline">|T<sub><span class="text">parallel</span></sub> - T<sub><span class="text">serial</span></sub>| = 0.0 &mu;^&deg;<span class="text">C</span> &le; 1.0 &times; 10<sup>-8 &deg;</sup><span class="text">C</span></span> across all 324,000 temperature evaluations.</li>
+</ul>
+<h3 class="subsection-title">2.4 Hardware Integration Subsystem (Task E)</h3>
+<p>The hardware subsystem (<code>src/hardware/</code>) provides an extensible registry and communication interface for embedded targets:</p>
+<ul class="report-list">
+<li><strong>Explicit Simulation Disclosure:</strong> All mock adapters (<code>MockStm32DiscoveryAdapter</code>, <code>MockBasys3Adapter</code>, <code>MockJtagHs2Adapter</code>) explicitly identify as simulated (<code>is_simulated = true</code>).</li>
+<li><strong>Telemetry Streaming:</strong> Background threads generate realistic telemetry streams (internal MCU temperatures, core voltages, JTAG clock frequencies, bitstream CRC check flags) at 10 Hz.</li>
+<li><strong>Fault Injection & Recovery:</strong> Supports simulated transmission faults (packet drops, parity errors, timeout exceptions). An internal recovery state machine executes a sequence of soft reset, register re-initialization, and bus re-synchronization to restore online telemetry.</li>
+</ul>
+<h3 class="subsection-title">2.5 Backpropagation & Gradient Verification (Task F)</h3>
+<p>The backpropagation module (<code>src/backprop/</code>) implements a single-sample neural network regression model:</p>
+<ul class="report-list">
+<li><strong>Specifications:</strong> Input <span class="math-inline">x = 1.0</span>, target <span class="math-inline">y = 2.0</span>, hidden activation <span class="math-inline">h = tanh(w &middot; x + b)</span>, output prediction <span class="math-inline">y<sub><span class="text">pred</span></sub> = v &middot; h + c</span>, quadratic loss <span class="math-inline">J = <span class="frac"><span class="num">1</span><span class="den">2</span></span>(y<sub><span class="text">pred</span></sub> - y)<sup>2</sup></span>.</li>
+<li><strong>Analytical Multivariate Chain Rule:</strong></li>
+</ul>
+<div class="math-display">&delta;<sub><span class="text">out</span></sub> = y<sub><span class="text">pred</span></sub> - y, &nbsp;&nbsp; <span class="frac"><span class="num">&part; J</span><span class="den">&part; c</span></span> = &delta;<sub><span class="text">out</span></sub>, &nbsp;&nbsp; <span class="frac"><span class="num">&part; J</span><span class="den">&part; v</span></span> = &delta;<sub><span class="text">out</span></sub> h</div>
+<div class="math-display">&delta;<sub><span class="text">hidden</span></sub> = &delta;<sub><span class="text">out</span></sub> v (1 - h<sup>2</sup>), &nbsp;&nbsp; <span class="frac"><span class="num">&part; J</span><span class="den">&part; w</span></span> = &delta;<sub><span class="text">hidden</span></sub> x, &nbsp;&nbsp; <span class="frac"><span class="num">&part; J</span><span class="den">&part; b</span></span> = &delta;<sub><span class="text">hidden</span></sub></div>
+<ul class="report-list">
+<li><strong>Numerical Verification:</strong> Analytical gradients were verified against two-sided central finite differences (<span class="math-inline">&epsilon; = 1.0 &times; 10<sup>-6</sup></span>):</li>
+</ul>
+<div class="table-container"><table>
+<thead><tr>
+<th>Parameter (<span class="math-inline">&theta;</span>)</th>
+<th>Analytical Gradient</th>
+<th>Central Difference</th>
+<th>Absolute Error (<span class="math-inline">|&Delta;|</span>)</th>
+<th>Status</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong><span class="math-inline">w</span></strong></td>
+<td><code>-1.209464475240</code></td>
+<td><code>-1.209464475349</code></td>
+<td><span class="math-inline">1.09 &times; 10<sup>-10</sup></span></td>
+<td><strong>PASSED</strong> (<span class="math-inline">&le; 10<sup>-5</sup></span>)</td>
+</tr>
+<tr>
+<td><strong><span class="math-inline">b</span></strong></td>
+<td><code>-1.209464475240</code></td>
+<td><code>-1.209464475349</code></td>
+<td><span class="math-inline">1.09 &times; 10<sup>-10</sup></span></td>
+<td><strong>PASSED</strong> (<span class="math-inline">&le; 10<sup>-5</sup></span>)</td>
+</tr>
+<tr>
+<td><strong><span class="math-inline">v</span></strong></td>
+<td><code>-0.710682047486</code></td>
+<td><code>-0.710682047433</code></td>
+<td><span class="math-inline">5.31 &times; 10<sup>-11</sup></span></td>
+<td><strong>PASSED</strong> (<span class="math-inline">&le; 10<sup>-5</sup></span>)</td>
+</tr>
+<tr>
+<td><strong><span class="math-inline">c</span></strong></td>
+<td><code>-1.537882842740</code></td>
+<td><code>-1.537882842628</code></td>
+<td><span class="math-inline">1.12 &times; 10<sup>-10</sup></span></td>
+<td><strong>PASSED</strong> (<span class="math-inline">&le; 10<sup>-5</sup></span>)</td>
+</tr>
+</tbody>
+</table></div>
+<ul class="report-list">
+<li><strong>Simultaneous Updates & Convergence:</strong> All 4 parameters are updated simultaneously from immutable prior state: <span class="math-inline"><strong>&theta;</strong><sub>t+1</sub> = <strong>&theta;</strong><sub>t</sub> - &eta; &nabla; J</span>. Over 100 training steps (<span class="math-inline">&eta; = 0.1</span>), loss decreased monotonically from <span class="math-inline">J<sub>1</sub> = 1.182541818997</span> to <span class="math-inline">J<sub>100</sub> < 10<sup>-12</sup></span> (<span class="math-inline">y<sub><span class="text">pred</span></sub> = 1.999999999768 &approx; 2.000000</span>).</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">3. Verification & Quality Assurance</h2>
+<p>The codebase was subjected to exhaustive test-driven verification:</p>
+<ul class="report-list">
+<li><strong>CTest Automation:</strong> 7 dedicated test suites compiled under MSVC 19.51.36260.0 in Release mode executed in 0.43 seconds with a 100% pass rate:</li>
+<li><code>workbench_core_tests.exe</code>: 55 assertions passed</li>
+<li><code>workbench_geometry_tests.exe</code>: 72 assertions passed</li>
+<li><code>workbench_thermal_tests.exe</code>: 37 assertions passed</li>
+<li><code>workbench_performance_tests.exe</code>: 80 assertions passed</li>
+<li><code>workbench_hardware_tests.exe</code>: 91 assertions passed</li>
+<li><code>workbench_backprop_tests.exe</code>: 39 assertions passed</li>
+<li><code>workbench_ui_tests.exe</code>: 264 assertions passed</li>
+<li><strong>Total:</strong> Exactly <strong>638 passing assertions, 0 failed, 0 warnings</strong>.</li>
+<li><strong>Headless UI Verification:</strong> Edge Puppeteer automation (<code>scratch/test_stage11a_usability.js</code>) verified keyboard navigation accessibility, ARIA tab semantics, multi-viewport layout rendering, and contrast tokens across 19 automated assertions.</li>
+<li><strong>Standalone Package Clean-Directory Validation:</strong> The generated distribution package was extracted and tested in a clean temporary directory (<code>$env:TEMP\UEW_Standalone_Test</code>), verifying preflight integrity, WebView2 loader linkage, asset staging, and process shutdown across 32 assertions.</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">4. Engineering Assumptions & Limitations</h2>
+<ol class="report-list">
+<li><strong>Thermal Physics:</strong> Conduction is assumed 1D along the rod axis. Radial heat losses to the environment are neglected (<span class="math-inline">Bi \ll 0.1</span>), and material properties (<span class="math-inline">k, A</span>) are assumed temperature-invariant.</li>
+<li><strong>Simulated Hardware:</strong> All hardware adapters represent simulated mock instances. Real-world physical hardware communication via WinUSB, FTDI D2XX, or physical JTAG tap state machines is not implemented in this phase.</li>
+<li><strong>Neural Model Scope:</strong> The backpropagation module demonstrates fundamental multivariate calculus and simultaneous update mechanics on a single regression sample; it is not intended as a generalized deep learning framework.</li>
+<li><strong>Operating System Specialization:</strong> Desktop shell and launcher are specialized for Microsoft Windows 10/11 x64 leveraging native Win32 APIs and WebView2 Evergreen Runtime.</li>
+</ol>
+<hr class="divider" />
+<h2 class="section-title">5. Conclusion & Submission Status</h2>
+<p>The Unified Engineering Workbench successfully fulfills all functional, algorithmic, and packaging requirements of the PASS Science Works R&D Internship 2026–2027 assignment. The native C++17 core provides verified numerical accuracy, high-throughput parallel execution, and robust memory safety. The desktop shell delivers an intuitive, air-gapped user interface without external JavaScript framework dependencies.</p>
+<p><strong>Submission Deliverables Summary:</strong></p>
+<ul class="report-list">
+<li>Standalone Executable Package: <code>package/UnifiedEngineeringWorkbench-1.0.0-win64.zip</code> (Verified)</li>
+<li>Test Verification: 638/638 passing assertions (Verified)</li>
+<li>AI Use Disclosure: <code>docs/ai_use_disclosure.md</code> (Complete)</li>
+<li>Third-Party Licensing: <code>docs/licenses.md</code> (Complete)</li>
+<li><strong>Manual Author Actions Remaining:</strong> Compiling this report to submission PDF, attaching the physical handwritten backpropagation appendix, and pushing the Git repository to the remote destination.</li>
+</ul>
+</body>
+</html>
